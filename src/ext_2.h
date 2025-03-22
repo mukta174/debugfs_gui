@@ -1,19 +1,18 @@
-#ifndef EXT2_H
-#define EXT2_H
+#ifndef EXT2_READER_H
+#define EXT2_READER_H
 
-#include <stdint.h>
+#include <ext2fs/ext2fs.h>
 
-struct ext2_superblock {
-    uint32_t s_inodes_count;      // Total number of inodes
-    uint32_t s_blocks_count;      // Total number of blocks
-    uint32_t s_r_blocks_count;    // Number of reserved blocks
-    uint32_t s_free_blocks_count; // Number of free blocks
-    uint32_t s_free_inodes_count; // Number of free inodes
-    uint32_t s_first_data_block;  // First data block
-    // Add more fields as needed
-};
+typedef struct {
+    ext2_filsys fs;
+} ext2_context;
 
-// Function prototype
-int read_superblock(const char *device, struct ext2_superblock *sb);
+// Function declarations
+int ext2_init(ext2_context *ctx, const char *disk_image);
+void ext2_get_superblock_info(ext2_context *ctx);
+void ext2_list_directory(ext2_context *ctx, ext2_ino_t inode);
+void ext2_get_inode_info(ext2_context *ctx, ext2_ino_t inode);
+void ext2_close(ext2_context *ctx);
 
-#endif // EXT2_H
+#endif
+

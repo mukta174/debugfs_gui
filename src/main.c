@@ -1,17 +1,21 @@
 #include "ext_2.h"
-#include <stdio.h>
 
-int main() {
-    struct ext2_superblock sb;
-    if (read_superblock("ext2.img", &sb))  {
-        fprintf(stderr, "Failed to read superblock\n");
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Usage: %s <disk image>\n", argv[0]);
         return 1;
     }
 
-    printf("Inodes Count: %u\n", sb.s_inodes_count);
-    printf("Blocks Count: %u\n", sb.s_blocks_count);
-    printf("Free Blocks: %u\n", sb.s_free_blocks_count);
-    printf("Free Inodes: %u\n", sb.s_free_inodes_count);
+    ext2_context ctx;
+    if (ext2_init(&ctx, argv[1]) != 0) {
+        return 1;
+    }
 
+    ext2_get_superblock_info(&ctx);  // Print superblock information
+    ext2_list_directory(&ctx, 2);    // List root directory (inode 2)
+    ext2_get_inode_info(&ctx, 2);    // Get inode info for root directory
+
+    ext2_close(&ctx);
     return 0;
 }
+
